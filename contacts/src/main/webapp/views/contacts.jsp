@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body class="bg-light d-flex flex-column h-100 align-items-center">
+
         <form
             action="${pageContext.request.contextPath}/contacts" 
             method="POST" 
@@ -45,7 +46,6 @@
                     <h2 class="h5 small mb-2">Available contacts:</h2>
                     <ul class="list-group border-0">
                         <c:forEach items="${requestScope.contacts.all()}" var="contact">
-
                             <li class="list-group-item d-flex justify-content-between align-items-start">
                                 <div class="ms-2 me-auto">
                                     <div>
