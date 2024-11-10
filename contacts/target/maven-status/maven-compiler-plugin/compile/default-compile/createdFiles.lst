@@ -1,0 +1,4 @@
+com/contacts/mainTp/classes/ContactDTO.class
+com/contacts/mainTp/classes/ContactService.class
+com/contacts/mainTp/servlets/ContactsServlet.class
+com/contacts/mainTp/classes/EmailVO.class
