@@ -13,17 +13,13 @@
     </head>
     <body class="bg-light d-flex flex-column h-100 align-items-center">
 
-        <div
-            class="bg-white d-flex flex-column p-4 border border-light rounded-6 shadow-sm my-auto w-100 mx-2"
-            style="max-width: 600px;"
-        >
+        <div class="bg-white d-flex flex-column p-4 border border-light rounded-6 shadow-sm my-auto w-100 mx-2" style="max-width: 600px;">
 
             <form 
                 class="d-flex flex-column"
                 action="${pageContext.request.contextPath}/contacts" 
                 method="POST" 
             >
-        
                 <h1 class="h3 mb-3">New Contact</h1>
 
                 <div class="mb-3">
@@ -40,7 +36,6 @@
                     <a href="${pageContext.request.contextPath}" class="btn btn-light">Reset</a>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-
             </form>
 
             <c:if test="${requestScope.error != null}">
@@ -74,7 +69,6 @@
                         </c:forEach>
                     </ul>
                 </div>
-
                 <div class="mt-3 text-end">
                     <form method="POST">
                         <input name="_method" type="hidden" value="DELETE" />
@@ -85,6 +79,6 @@
                 </div>
             </c:if>
             
-        </form>
+        </div>
     </body>
 </html>
