@@ -66,7 +66,7 @@ build_and_deploy
 
 LAST_BUILD=0
 echo -e "${YELLOW}Watching for changes...${NC}"
-fswatch -e ".*" -i "\\.java$" -i "\\.xml$" -i "\\.css$" -i "\\.jsp$" -i "\\.html$" --event Updated ./src ./pom.xml | while read f; do
+fswatch -e ".*" -i "\\.java$" -i "\\.xml$" -i "\\.css$" -i "\\.js$" -i "\\.jsp$" -i "\\.html$" --event Updated ./src ./pom.xml | while read f; do
     CURRENT_TIME=$(date +%s)
     if (( CURRENT_TIME - LAST_BUILD > DEBOUNCE_DELAY )); then
         echo -e "${YELLOW}File saved: $f${NC}"

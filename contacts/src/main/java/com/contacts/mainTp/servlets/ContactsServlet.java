@@ -39,6 +39,15 @@ public class ContactsServlet extends HttpServlet {
     protected void doPost(
         HttpServletRequest request, HttpServletResponse response
     ) throws ServletException, IOException {
+
+        // if the delete form was submitted
+        if (
+            request.getParameter("_method") != null && 
+            request.getParameter("_method").equals("DELETE") 
+        ) {
+            this.doDelete(request, response);
+        }
+        
         try {
             // validate the email address
             EmailVO email = new EmailVO((String) request.getParameter("email"));
@@ -58,5 +67,22 @@ public class ContactsServlet extends HttpServlet {
 
         // redirect to the index page
         response.sendRedirect(request.getContextPath() + "/contacts");
+    }
+
+    @Override
+    protected void doDelete(
+        HttpServletRequest request, HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        if (request.getParameter("_index") == null) {
+            this.contacts.flush();   
+        }
+
+        if (request.getParameter("_index") != null) {
+            int index = Integer.parseInt(request.getParameter("_index"));
+            this.contacts.delete(index);
+        }
+
+        this.doGet(request, response);
     }
 }

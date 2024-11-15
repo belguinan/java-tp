@@ -44,4 +44,22 @@ public class ContactService {
     {
         return this.list.size();
     }
+
+    /**
+     * Delete item by index
+     * 
+     * @param index
+     */
+    public void delete(int index)
+    {
+        this.list.remove(index);
+    }
+
+    /**
+     * return void
+     */
+    public void flush()
+    {
+        this.list.clear();
+    }
 }
