@@ -83,6 +83,6 @@ public class ContactsServlet extends HttpServlet {
             this.sessionManager.findOrCreate(request.getSession()).delete(index);
         }
 
-        this.doGet(request, response);
+        response.sendRedirect(request.getContextPath() + "/contacts");
     }
 }
