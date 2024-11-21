@@ -1,11 +1,10 @@
 package com.contacts.mainTp.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import com.contacts.mainTp.classes.ContactDTO;
-import com.contacts.mainTp.classes.ContactService;
 import com.contacts.mainTp.classes.EmailVO;
+import com.contacts.mainTp.classes.SessionManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,20 +15,21 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns = {"/contacts", "/contacts/"})
 public class ContactsServlet extends HttpServlet {
 
-    private ContactService contacts;
+    private SessionManager sessionManager;
 
     public ContactsServlet() {
         super();
-        this.contacts = new ContactService();
+        this.sessionManager = new SessionManager();
     }
     
     @Override
     protected void doGet(
         HttpServletRequest request, HttpServletResponse response
     ) throws ServletException, IOException {
+        
 
         // inject contacts into the view
-        request.setAttribute("contacts", this.contacts);
+        request.setAttribute("contacts", this.sessionManager.findOrCreate(request.getSession()));
         
         // forward that request to the view
         request.getRequestDispatcher("views/contacts.jsp").forward(request, response);
@@ -56,7 +56,7 @@ public class ContactsServlet extends HttpServlet {
             ContactDTO contact = new ContactDTO(email.getValue(), request.getParameter("name"));
 
             // push to the container
-            this.contacts.add(contact);   
+            this.sessionManager.findOrCreate(request.getSession()).add(contact);   
         } catch (IOException e) {
             // set the error message as a request param
             request.setAttribute("error", e.getMessage());
@@ -75,12 +75,12 @@ public class ContactsServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         if (request.getParameter("_index") == null) {
-            this.contacts.flush();   
+            this.sessionManager.findOrCreate(request.getSession()).flush();   
         }
 
         if (request.getParameter("_index") != null) {
             int index = Integer.parseInt(request.getParameter("_index"));
-            this.contacts.delete(index);
+            this.sessionManager.findOrCreate(request.getSession()).delete(index);
         }
 
         this.doGet(request, response);
