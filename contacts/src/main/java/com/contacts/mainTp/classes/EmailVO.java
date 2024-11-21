@@ -1,7 +1,5 @@
 package com.contacts.mainTp.classes;
 
-import java.io.IOException;
-
 public final class EmailVO {
 
     /**
@@ -12,10 +10,10 @@ public final class EmailVO {
     /**
      * @param String email
      */
-    public EmailVO(String email) throws IOException
+    public EmailVO(String email) throws InvalidArgumentException
     {   
         if (! this.isValid(email)) {
-            throw new IOException("Invalid email address");
+            throw new InvalidArgumentException("Invalid email address");
         }
 
         this.email = email;
