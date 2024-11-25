@@ -2,7 +2,7 @@ package com.contacts.mainTp.servlets;
 
 import java.io.IOException;
 
-import com.contacts.mainTp.classes.ContactDTO;
+import com.contacts.mainTp.classes.Contact;
 import com.contacts.mainTp.classes.ContactService;
 import com.contacts.mainTp.classes.EmailVO;
 import com.contacts.mainTp.classes.InvalidArgumentException;
@@ -38,7 +38,7 @@ public class ContactsServlet extends HttpServlet {
     ) throws ServletException, IOException 
     {
         // Get or create contacts container
-        ContactService contacts  = this.sessionManager.findOrCreate(request.getSession());
+        ContactService contacts  = this.sessionManager.findOrCreate(request.getSession(), "contacts");
         
         // Inject contacts container into the view
         request.setAttribute("contacts", contacts);
@@ -66,10 +66,10 @@ public class ContactsServlet extends HttpServlet {
             EmailVO email = new EmailVO((String) request.getParameter("email"));
 
             // Encapsulate the data..
-            ContactDTO contact = new ContactDTO(email.getValue(), request.getParameter("name"));
+            Contact contact = new Contact(email.getValue(), request.getParameter("name"));
 
             // Get the container
-            ContactService contacts = this.sessionManager.findOrCreate(request.getSession());
+            ContactService contacts = this.sessionManager.findOrCreate(request.getSession(), "contacts");
 
             // Push new created contact
             contacts.add(contact); 
@@ -93,7 +93,7 @@ public class ContactsServlet extends HttpServlet {
     ) throws ServletException, IOException 
     {
         // Get or create contacts container
-        ContactService contacts = this.sessionManager.findOrCreate(request.getSession());
+        ContactService contacts = this.sessionManager.findOrCreate(request.getSession(), "contacts");
 
         try {
             // Clear button was clicked

@@ -7,22 +7,22 @@ public class ContactService {
     /**
      * Contacts array list
      */
-    private ArrayList<ContactDTO> list;
+    private ArrayList<Contact> list;
     
     /**
      * Class Contructor
      */
-    public ContactService() 
+    public ContactService()
     {
-        this.list = new ArrayList<ContactDTO>();
+        this.list = new ArrayList<Contact>();
     }
 
     /**
      * Get all pushed contacts
      * 
-     * @return ArrayList<ContactDTO>
+     * @return ArrayList<Contact>
      */
-    public ArrayList<ContactDTO> all() 
+    public ArrayList<Contact> all() 
     {
         return this.list;
     }
@@ -32,7 +32,7 @@ public class ContactService {
      * 
      * @param contact
      */
-    public void add(ContactDTO contact)
+    public void add(Contact contact)
     {
         this.list.add(contact);
     }
