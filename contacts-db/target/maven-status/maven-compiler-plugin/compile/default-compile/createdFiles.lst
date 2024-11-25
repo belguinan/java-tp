@@ -1,0 +1,6 @@
+com/contacts/mainTp/classes/Contact.class
+com/contacts/mainTp/classes/ContactService.class
+com/contacts/mainTp/classes/InvalidArgumentException.class
+com/contacts/mainTp/classes/SessionManager.class
+com/contacts/mainTp/servlets/ContactsServlet.class
+com/contacts/mainTp/classes/EmailVO.class
