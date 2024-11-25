@@ -47,8 +47,8 @@
             <c:if test="${requestScope.contacts.size() > 0}">
                 <div class="p-4 mt-5 rounded-6 bg-light">
                     <h2 class="h5 small mb-2">Available contacts:</h2>
+                        <c:forEach items="${requestScope.contacts.list()}" var="contact" varStatus="loop">
                     <ul class="list-group border-0">
-                        <c:forEach items="${requestScope.contacts.all()}" var="contact" varStatus="loop">
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div class="ms-2 me-auto">
                                     <div>
@@ -59,7 +59,7 @@
                                 <div>
                                     <form method="POST">
                                         <input name="_method" type="hidden" value="DELETE" />
-                                        <input name="_index" type="hidden" value="${loop.index}" />
+                                        <input name="_id" type="hidden" value="${contact.id()}" />
                                         <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-sm p-0">
                                             <img src="/images/trash.svg" width="25" height="25"/>
                                         </button>

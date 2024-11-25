@@ -1,4 +1,6 @@
-package com.contacts.mainTp.classes;
+package com.contacts.mainTp.attributes;
+
+import com.contacts.mainTp.classes.InvalidArgumentException;
 
 public final class EmailVO {
 

@@ -1,12 +1,13 @@
 package com.contacts.mainTp.servlets;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-import com.contacts.mainTp.classes.Contact;
-import com.contacts.mainTp.classes.ContactService;
-import com.contacts.mainTp.classes.EmailVO;
+import com.contacts.mainTp.beans.Contact;
+import com.contacts.mainTp.classes.ContactRepository;
+import com.contacts.mainTp.classes.Db;
+import com.contacts.mainTp.attributes.EmailVO;
 import com.contacts.mainTp.classes.InvalidArgumentException;
-import com.contacts.mainTp.classes.SessionManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,20 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns = {"/contacts", "/contacts/"})
 public class ContactsServlet extends HttpServlet {
-
-    /**
-     * Session manager, assign each session 
-     * Id to an empty contacts container
-     */
-    private SessionManager sessionManager;
-
-    /**
-     * Creates the session manager
-     */
-    public ContactsServlet() {
-        super();
-        this.sessionManager = new SessionManager();
-    }
     
     @Override
     protected void doGet(
@@ -38,8 +25,15 @@ public class ContactsServlet extends HttpServlet {
     ) throws ServletException, IOException 
     {
         // Get or create contacts container
-        ContactService contacts  = this.sessionManager.findOrCreate(request.getSession(), "contacts");
-        
+        ContactRepository contacts = new ContactRepository(Db.getInstance());
+
+        try {
+            // Selecy every item from the db
+            contacts.all();
+        } catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+        }
+
         // Inject contacts container into the view
         request.setAttribute("contacts", contacts);
         
@@ -66,22 +60,27 @@ public class ContactsServlet extends HttpServlet {
             EmailVO email = new EmailVO((String) request.getParameter("email"));
 
             // Encapsulate the data..
-            Contact contact = new Contact(email.getValue(), request.getParameter("name"));
+            Contact contact = Contact.withoutId(email.getValue(), request.getParameter("name"));
 
-            // Get the container
-            ContactService contacts = this.sessionManager.findOrCreate(request.getSession(), "contacts");
+            // Get or create contacts container
+            ContactRepository contacts = new ContactRepository(Db.getInstance());
 
-            // Push new created contact
+            // Insert the new contact
             contacts.add(contact); 
             
         } catch (InvalidArgumentException e) {
             // Set the error message as a request param
             request.setAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            // Handle insert query failed error
+            request.setAttribute("error", e.getMessage());
+        }
 
+        if (request.getAttribute("error") != null) {
             // Redirect and keep the current request params.
             this.doGet(request, response);
         }
-
+        
         // Redirect to the index page
         response.sendRedirect(request.getContextPath() + "/contacts");
     }
@@ -93,25 +92,36 @@ public class ContactsServlet extends HttpServlet {
     ) throws ServletException, IOException 
     {
         // Get or create contacts container
-        ContactService contacts = this.sessionManager.findOrCreate(request.getSession(), "contacts");
+        ContactRepository contacts = new ContactRepository(Db.getInstance());
 
         try {
             // Clear button was clicked
-            if (request.getParameter("_index") == null) {
-                throw new InvalidArgumentException();
+            if (request.getParameter("_id") == null) {
+                contacts.truncate();
+                throw new Exception("Database truncated!");
             }
 
             // Delete signle item button was clicked
-            int index = Integer.parseInt(request.getParameter("_index"));
+            long id = (long) Long.parseLong(request.getParameter("_id"));
 
             // Delete single item
-            contacts.delete(index);
-        } catch (InvalidArgumentException e) {
-            // Purge all the items
-            contacts.flush(); 
+            contacts.deleteById(id);
+
+        } catch (Exception e) {
+            // Handle insert query failed error
         }
 
         // Return to our homepage
         response.sendRedirect(request.getContextPath() + "/contacts");
+    }
+
+    @Override
+    public void destroy()    
+    {
+        try {
+            Db.getInstance().getConnection().close();
+        } catch (SQLException e) {}
+
+        super.destroy();
     }
 }
