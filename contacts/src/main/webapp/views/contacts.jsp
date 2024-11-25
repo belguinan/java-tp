@@ -52,9 +52,9 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <div class="ms-2 me-auto">
                                     <div>
-                                        <span class="text-muted">Name:</span> ${contact.getName()}
+                                        <span class="text-muted">Name:</span> <c:out value="${contact.getName()}" />
                                     </div>
-                                    <span class="text-muted">Email:</span> ${contact.getEmail()}
+                                    <span class="text-muted">Email:</span> <c:out value="${contact.getEmail()}" />
                                 </div>
                                 <div>
                                     <form method="POST">

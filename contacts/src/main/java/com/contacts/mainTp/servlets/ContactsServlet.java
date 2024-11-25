@@ -1,11 +1,12 @@
 package com.contacts.mainTp.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import com.contacts.mainTp.classes.ContactDTO;
 import com.contacts.mainTp.classes.ContactService;
 import com.contacts.mainTp.classes.EmailVO;
+import com.contacts.mainTp.classes.InvalidArgumentException;
+import com.contacts.mainTp.classes.SessionManager;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,31 +17,43 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns = {"/contacts", "/contacts/"})
 public class ContactsServlet extends HttpServlet {
 
-    private ContactService contacts;
+    /**
+     * Session manager, assign each session 
+     * Id to an empty contacts container
+     */
+    private SessionManager sessionManager;
 
+    /**
+     * Creates the session manager
+     */
     public ContactsServlet() {
         super();
-        this.contacts = new ContactService();
+        this.sessionManager = new SessionManager();
     }
     
     @Override
     protected void doGet(
-        HttpServletRequest request, HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        // inject contacts into the view
-        request.setAttribute("contacts", this.contacts);
+        HttpServletRequest request, 
+        HttpServletResponse response
+    ) throws ServletException, IOException 
+    {
+        // Get or create contacts container
+        ContactService contacts  = this.sessionManager.findOrCreate(request.getSession());
         
-        // forward that request to the view
+        // Inject contacts container into the view
+        request.setAttribute("contacts", contacts);
+        
+        // Forward that request to the view
         request.getRequestDispatcher("views/contacts.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(
-        HttpServletRequest request, HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        // if the delete form was submitted
+        HttpServletRequest request, 
+        HttpServletResponse response
+    ) throws ServletException, IOException 
+    {
+        // If the delete form was submitted
         if (
             request.getParameter("_method") != null && 
             request.getParameter("_method").equals("DELETE") 
@@ -49,40 +62,56 @@ public class ContactsServlet extends HttpServlet {
         }
         
         try {
-            // validate the email address
+            // Validate the email address
             EmailVO email = new EmailVO((String) request.getParameter("email"));
 
-            // encapsulate the data..
+            // Encapsulate the data..
             ContactDTO contact = new ContactDTO(email.getValue(), request.getParameter("name"));
 
-            // push to the container
-            this.contacts.add(contact);   
-        } catch (IOException e) {
-            // set the error message as a request param
+            // Get the container
+            ContactService contacts = this.sessionManager.findOrCreate(request.getSession());
+
+            // Push new created contact
+            contacts.add(contact); 
+            
+        } catch (InvalidArgumentException e) {
+            // Set the error message as a request param
             request.setAttribute("error", e.getMessage());
 
-            // redirect and keep the current request params.
+            // Redirect and keep the current request params.
             this.doGet(request, response);
         }
 
-        // redirect to the index page
+        // Redirect to the index page
         response.sendRedirect(request.getContextPath() + "/contacts");
     }
 
     @Override
     protected void doDelete(
-        HttpServletRequest request, HttpServletResponse response
-    ) throws ServletException, IOException {
+        HttpServletRequest request, 
+        HttpServletResponse response
+    ) throws ServletException, IOException 
+    {
+        // Get or create contacts container
+        ContactService contacts = this.sessionManager.findOrCreate(request.getSession());
 
-        if (request.getParameter("_index") == null) {
-            this.contacts.flush();   
-        }
+        try {
+            // Clear button was clicked
+            if (request.getParameter("_index") == null) {
+                throw new InvalidArgumentException();
+            }
 
-        if (request.getParameter("_index") != null) {
+            // Delete signle item button was clicked
             int index = Integer.parseInt(request.getParameter("_index"));
-            this.contacts.delete(index);
+
+            // Delete single item
+            contacts.delete(index);
+        } catch (InvalidArgumentException e) {
+            // Purge all the items
+            contacts.flush(); 
         }
 
-        this.doGet(request, response);
+        // Return to our homepage
+        response.sendRedirect(request.getContextPath() + "/contacts");
     }
 }
