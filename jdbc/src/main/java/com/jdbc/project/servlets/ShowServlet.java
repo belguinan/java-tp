@@ -31,13 +31,26 @@ public class ShowServlet extends HttpServlet {
                 ));
             }
 
+            String message = (String) request.getSession().getAttribute("message");
+            
+            if (message != null) {
+                request.setAttribute("message", message);
+                request.getSession().removeAttribute("message");
+            }
+            
+            request.setAttribute("contacts", contacts);
             request.setAttribute("contacts", contacts);
         } catch (SQLException e) {
-            // add error handling
+            request.setAttribute("error", e.getMessage());
         }
         
         // show resources here!
         request.getRequestDispatcher("views/show.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.getWriter().println("Good!");
     }
 
 }

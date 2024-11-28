@@ -3,7 +3,6 @@ package com.jdbc.project.servlets;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 import com.jdbc.Database;
 import com.jdbc.project.beans.Contact;
@@ -40,17 +39,13 @@ public class HelloServlet extends HttpServlet {
                 throw new SQLException("Failed to insert data!");
             }
 
-            request.setAttribute("message", "Contact inserted successfully");
+            request.getSession().setAttribute("message", "Contact inserted successfully");
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("error", e.getMessage());
             this.doGet(request, response);
         }
 
-        // which one should we use to keep the success message
-        request.getRequestDispatcher(request.getContextPath() + "/show").forward(request, response);
-
-        // 
         response.sendRedirect(request.getContextPath() + "/show");
     }
 }
