@@ -1,0 +1,6 @@
+com/contacts/jpa/classes/UserFactory.class
+com/contacts/jpa/classes/InvalidArgumentException.class
+com/contacts/jpa/servlets/HelloServlet.class
+com/contacts/jpa/beans/User.class
+com/contacts/jpa/classes/EmailVO.class
+com/contacts/jpa/repositories/DatabaseRepository.class

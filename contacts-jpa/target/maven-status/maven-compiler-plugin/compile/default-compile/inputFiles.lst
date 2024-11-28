@@ -1,0 +1,6 @@
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/beans/User.java
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/classes/EmailVO.java
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/classes/InvalidArgumentException.java
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/classes/UserFactory.java
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/repositories/DatabaseRepository.java
+/Users/belguinan/Study/Java_Cours/java-tp/contacts-jpa/src/main/java/com/contacts/jpa/servlets/HelloServlet.java
