@@ -6,6 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class UserFactory {
 
+    /**
+     * @param request
+     * @return
+     * @throws InvalidArgumentException
+     */
     public static User fromRequest(HttpServletRequest request) throws InvalidArgumentException
     {
         // Get user name

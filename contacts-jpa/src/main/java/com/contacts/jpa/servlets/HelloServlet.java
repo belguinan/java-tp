@@ -70,7 +70,6 @@ public class HelloServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void doDelete(
         HttpServletRequest request, 
