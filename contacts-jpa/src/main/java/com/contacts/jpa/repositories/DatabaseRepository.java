@@ -3,8 +3,6 @@ package com.contacts.jpa.repositories;
 import jakarta.persistence.Table;
 
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
