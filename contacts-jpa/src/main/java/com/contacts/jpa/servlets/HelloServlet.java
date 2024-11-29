@@ -8,6 +8,8 @@ import com.contacts.jpa.classes.InvalidArgumentException;
 import com.contacts.jpa.classes.UserFactory;
 import com.contacts.jpa.repositories.DatabaseRepository;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,13 +19,18 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("")
 public class HelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+
+    /**
+     * EntityManagerFactory must be created once as a singleton
+     */
+    private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
     
     @Override
     @SuppressWarnings("rawtypes")
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>(entityManagerFactory))) {
             List users = (List<User>) repository.get(User.class);
             request.setAttribute("users", users);
         }
@@ -46,7 +53,7 @@ public class HelloServlet extends HttpServlet {
             return;
         }
         
-        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>(entityManagerFactory))) {
             // Create new user
             User user = UserFactory.fromRequest(request);
 
@@ -76,7 +83,7 @@ public class HelloServlet extends HttpServlet {
         HttpServletResponse response
     ) throws ServletException, IOException 
     {
-        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>(entityManagerFactory))) {
             this.truncateOrDelete(repository, request);
         }
 
