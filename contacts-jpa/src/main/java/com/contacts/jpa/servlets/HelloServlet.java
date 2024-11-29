@@ -20,11 +20,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class HelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
+    private DatabaseRepository<User> repository;
+    
+    public HelloServlet() {
+        this.repository = new DatabaseRepository<User>();
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        List users = (List<User>) (new DatabaseRepository<User>()).get(User.class);
+        List users = (List<User>) this.repository.get(User.class);
 
         request.setAttribute("users", users);
                 
@@ -51,7 +57,7 @@ public class HelloServlet extends HttpServlet {
             User user = UserFactory.fromRequest(request);
 
             // Insert user to db
-            (new DatabaseRepository<User>()).create(user);
+            this.repository.create(user);
             
         } catch (InvalidArgumentException e) {
             // Set the error message as a request param
@@ -76,12 +82,10 @@ public class HelloServlet extends HttpServlet {
         HttpServletResponse response
     ) throws ServletException, IOException 
     {
-        DatabaseRepository repository = new DatabaseRepository<User>();
-
         try {
             // Clear button was clicked
             if (request.getParameter("_id") == null) {
-                repository.truncate(User.class);
+                this.repository.truncate(User.class);
                 throw new Exception("Database truncated!");
             }
 
@@ -89,7 +93,7 @@ public class HelloServlet extends HttpServlet {
             User user = UserFactory.fromRequest(request);
             
             // Delete single item
-            repository.delete(user);
+            this.repository.delete(user);
 
         } catch (Exception e) {
             e.printStackTrace();
