@@ -3,6 +3,8 @@ package com.contacts.jpa.repositories;
 import jakarta.persistence.Table;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -23,35 +25,6 @@ public class DatabaseRepository<T> implements AutoCloseable {
     public DatabaseRepository() {
         this.entityManager = entityManagerFactory.createEntityManager();
     }
-    
-    /**
-     * @param model
-     * @throws Exception
-     */
-    public void create(T model) throws Exception
-    {
-        try {
-            this.entityManager.getTransaction().begin();
-            this.entityManager.persist(model);
-            this.entityManager.getTransaction().commit();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    /**
-     * @param model
-     */
-    public void delete(T model)
-    {
-        try {
-            this.entityManager.getTransaction().begin();
-            this.entityManager.remove(this.entityManager.merge(model));
-            this.entityManager.getTransaction().commit();
-        } catch (Exception e) {
-            throw e;
-        }
-    }
 
     /**
      * @param model
@@ -60,18 +33,52 @@ public class DatabaseRepository<T> implements AutoCloseable {
     public List<T> get(Class<T> model) {        
         return entityManager.createQuery("Select a from " + model.getSimpleName() + " a", model).getResultList();
     }
+    
+    /**
+     * @param model
+     * @throws Exception
+     */
+    public void create(T model) throws Exception
+    {
+        this.inTransaction(() -> {
+            this.entityManager.persist(model);
+        });
+    }
+
+    
+    /**
+     * @param model
+     */
+    public void delete(T model)
+    {
+        this.inTransaction(() -> {
+            this.entityManager.remove(this.entityManager.merge(model));
+        });
+    }
 
     /**
      * @param model
      */
     public void truncate(Class<T> model)
     {
-        try {
-            this.entityManager.getTransaction().begin();
+        this.inTransaction(() -> {
             String query = "Truncate " + model.getAnnotation(Table.class).name();
             this.entityManager.createNativeQuery(query).executeUpdate();
+        });
+    }
+
+    /**
+     * @param callback
+     */
+    public void inTransaction(Runnable callback) {
+        try {
+            this.entityManager.getTransaction().begin();
+            callback.run();
             this.entityManager.getTransaction().commit();
         } catch (Exception e) {
+            if (this.entityManager.getTransaction().isActive()) {
+                this.entityManager.getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -79,7 +86,7 @@ public class DatabaseRepository<T> implements AutoCloseable {
     @Override
     public void close() {
         if (this.entityManager != null && this.entityManager.isOpen()) {
-            this.entityManager.clear();
+            this.entityManager.close();
         }
     }
 }
