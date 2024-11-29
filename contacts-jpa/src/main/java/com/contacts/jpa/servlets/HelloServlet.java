@@ -1,11 +1,9 @@
 package com.contacts.jpa.servlets;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import com.contacts.jpa.beans.User;
-import com.contacts.jpa.classes.EmailVO;
 import com.contacts.jpa.classes.InvalidArgumentException;
 import com.contacts.jpa.classes.UserFactory;
 import com.contacts.jpa.repositories.DatabaseRepository;
