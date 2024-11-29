@@ -4,12 +4,10 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 
-import jakarta.enterprise.context.Dependent;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-@Dependent
 public class DatabaseRepository<T> {
 
     private final EntityManagerFactory entityManagerFactory;
