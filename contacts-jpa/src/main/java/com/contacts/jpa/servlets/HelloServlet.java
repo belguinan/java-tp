@@ -18,19 +18,15 @@ import jakarta.servlet.http.HttpServletResponse;
 public class HelloServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     
-    private DatabaseRepository<User> repository;
-    
-    public HelloServlet() {
-        this.repository = new DatabaseRepository<User>();
-    }
-    
     @Override
+    @SuppressWarnings("rawtypes")
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        List users = (List<User>) this.repository.get(User.class);
-
-        request.setAttribute("users", users);
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
+            List users = (List<User>) repository.get(User.class);
+            request.setAttribute("users", users);
+        }
                 
         request.getRequestDispatcher("views/users.jsp").forward(request, response);
     }
@@ -50,12 +46,12 @@ public class HelloServlet extends HttpServlet {
             return;
         }
         
-        try {
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
             // Create new user
             User user = UserFactory.fromRequest(request);
 
             // Insert user to db
-            this.repository.create(user);
+            repository.create(user);
             
         } catch (InvalidArgumentException e) {
             // Set the error message as a request param
@@ -80,25 +76,28 @@ public class HelloServlet extends HttpServlet {
         HttpServletResponse response
     ) throws ServletException, IOException 
     {
-        try {
-            // Clear button was clicked
-            if (request.getParameter("_id") == null) {
-                this.repository.truncate(User.class);
-                throw new Exception("Database truncated!");
-            }
-
-            // Create new user
-            User user = UserFactory.fromRequest(request);
-            
-            // Delete single item
-            this.repository.delete(user);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (DatabaseRepository<User> repository = (new DatabaseRepository<User>())) {
+            this.truncateOrDelete(repository, request);
         }
 
-        // Return to our homepage
         response.sendRedirect(request.getContextPath());
     }
 
+    /**
+     * @param repository
+     * @param request
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void truncateOrDelete(DatabaseRepository repository, HttpServletRequest request) 
+    {
+        if (request.getParameter("_id") == null) {
+            repository.truncate(User.class);
+            return;
+        }
+
+        try {
+            User user = UserFactory.fromRequest(request);
+            repository.delete(user);
+        } catch (InvalidArgumentException e) {}
+    }
 }

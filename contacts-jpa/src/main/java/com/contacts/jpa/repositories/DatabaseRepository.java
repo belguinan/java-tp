@@ -8,14 +8,20 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-public class DatabaseRepository<T> {
+public class DatabaseRepository<T> implements AutoCloseable {
 
-    private final EntityManagerFactory entityManagerFactory;
+    /**
+     * EntityManagerFactory must be created once
+     */
+    private static final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("default");
+
+    /**
+     * EntityManager must be created per request
+     */
     private EntityManager entityManager;
     
     public DatabaseRepository() {
-        this.entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        this.entityManager = this.entityManagerFactory.createEntityManager();
+        this.entityManager = entityManagerFactory.createEntityManager();
     }
     
     /**
@@ -67,6 +73,13 @@ public class DatabaseRepository<T> {
             this.entityManager.getTransaction().commit();
         } catch (Exception e) {
             throw e;
+        }
+    }
+
+    @Override
+    public void close() {
+        if (this.entityManager != null && this.entityManager.isOpen()) {
+            this.entityManager.clear();
         }
     }
 }
